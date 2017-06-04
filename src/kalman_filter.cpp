@@ -1,4 +1,5 @@
 #include "kalman_filter.h"
+#define SmallValue 0.0001
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -41,13 +42,37 @@ void KalmanFilter::Update(const VectorXd &z) {
 
 void KalmanFilter::UpdateEKF(const VectorXd &z) {
   
-  //double check this - cao
-  double rho = sqrt(x_(0)*x_(0) + x_(1)*x_(1));
-  double theta = atan(x_(1) / x_(0));
-  double rho_dot = (x_(0)*x_(2) + x_(1)*x_(3)) / rho;
+// https://discussions.udacity.com/t/rmse-too-high-with-simulator-v2/250330/5
+  
+//  double rho = sqrt(x_(0)*x_(0) + x_(1)*x_(1));
+//  double theta = atan(x_(1) / x_(0));
+//  double rho_dot = (x_(0)*x_(2) + x_(1)*x_(3)) / rho;
+  
+  double p_x = x_(0);
+  double p_y = x_(1);
+  double v_x = x_(2);
+  double v_y = x_(3);
+  double rho = sqrt(pow(p_x, 2) + pow(p_y, 2));
+  
+  if(fabs(p_x) < SmallValue) {
+    p_x = SmallValue;
+  }
+  if (fabs(rho) < SmallValue){
+    rho = SmallValue;
+  }
+  
+  double theta = atan2(p_y, p_x);
+  double rho_dot = (p_x * v_x + p_y * v_y) / (rho);
+  
   VectorXd h = VectorXd(3); // h(x_)
   h << rho, theta, rho_dot;
+  
   VectorXd y = z - h;
+  
+  if(fabs(y[1]) > M_PI){
+    y[1] = atan2(sin(y[1]), cos(y[1]));
+  }
+  
   
   MatrixXd Ht = H_.transpose();
   MatrixXd S = H_ * P_ * Ht + R_;

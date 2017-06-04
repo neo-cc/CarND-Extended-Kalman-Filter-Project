@@ -1,5 +1,6 @@
 #include <iostream>
 #include "tools.h"
+#define SmallValue 0.0001
 
 using Eigen::VectorXd;
 using Eigen::MatrixXd;
@@ -53,6 +54,17 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
   float vx = x_state(2);
   float vy = x_state(3);
   
+  // Special Case
+  if (fabs(px) < SmallValue){
+    px = SmallValue;
+    cout << "initial px too small, set to min" << endl;
+  }
+  
+  if (fabs(py) < SmallValue){
+    py = SmallValue;
+    cout << "initial py too small, set to min" << endl;
+  }
+  
   //pre-compute a set of terms to avoid repeated calculation
   float c1 = px*px+py*py;
   float c2 = sqrt(c1);
@@ -66,8 +78,8 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
   
   //compute the Jacobian matrix
   Hj << (px/c2), (py/c2), 0, 0,
-  -(py/c1), (px/c1), 0, 0,
-  py*(vx*py - vy*px)/c3, px*(px*vy - py*vx)/c3, px/c2, py/c2;
+        -(py/c1), (px/c1), 0, 0,
+        py*(vx*py - vy*px)/c3, px*(px*vy - py*vx)/c3, px/c2, py/c2;
   
   return Hj;
 }  
