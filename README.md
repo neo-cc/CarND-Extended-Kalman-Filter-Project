@@ -118,3 +118,52 @@ and how to install it.
 
 Regardless of the IDE used, every submitted project must
 still be compilable with cmake and make.
+
+## Results
+
+[//]: # (Image References)
+[image1]: ./result/both_radar_lidar.png
+[image2]: ./result/only_radar.png
+[image3]: ./result/only_lidar.png
+[image4]: ./result/reverse.png
+
+#### Test Spec: RMSE <= [0.11, 0.11, 0.52, 0.52] 
+
+1.Result with both Lidar and Radar Measurements (dataset1):
+![alt text][image1]
+RMSE: [0.0974, 0.0855, 0.4517, 0.4404]  
+
+RMSE is within spec, test PASS!
+
+2.Result with both Lidar and Radar Measurements (dataset2, reverse dataset1):
+![alt text][image4]
+RMSE: [0.0726, 0.0965, 0.4216, 0.4932]  
+
+RMSE is within spec, test PASS!
+
+3.Result with only Lidar:
+![alt text][image3]
+RMSE: [0.1473, 0.1153, 0.6383, 0.5346] 
+
+Test FAIL!
+
+4.Result with only Radar:
+![alt text][image2]
+RMSE: [0.2302, 0.3464, 0.5835, 0.8040]
+
+Test FAIL!
+
+
+#### Summary
+
+Both case1 and 2, with both radar and lidar measurements, test can pass the spec.
+
+For case 3 and 4, with only radar or lidar measurements, test would get higher RMSE and fail the spec. 
+
+Lidar has slightly better (RMSE) performance than radar.
+
+
+
+ 
+
+
